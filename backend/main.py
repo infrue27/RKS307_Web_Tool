@@ -31,8 +31,6 @@ app.add_middleware(
 
 async def read_image(file: UploadFile):
     """Validasi file lalu buka sebagai gambar. Format dicek dari isi file, bukan dari ekstensi."""
-    if file.content_type not in MIME.values():
-        raise HTTPException(415, "Format belum didukung. Gunakan JPG, PNG, atau WebP.")
     data = await file.read()
     if len(data) > MAX_BYTES:
         raise HTTPException(413, "Ukuran file maksimal 10 MB.")
@@ -41,7 +39,7 @@ async def read_image(file: UploadFile):
         fmt = img.format
         img.load()
     except (UnidentifiedImageError, OSError):
-        raise HTTPException(400, "File bukan gambar yang valid.")
+        raise HTTPException(415, "Format belum didukung. Gunakan JPG, JPEG, PNG, atau WebP.")
     if fmt not in MIME:
         raise HTTPException(415, "Isi file tidak sesuai format JPG, PNG, atau WebP.")
     img = ImageOps.exif_transpose(img)
