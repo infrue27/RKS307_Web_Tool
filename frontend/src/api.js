@@ -1,6 +1,6 @@
 export const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
-// Kirim form ke endpoint /api/v1/images/{path}, kembalikan Blob gambar hasil
+// Kirim form ke endpoint /api/v1/images/{path}, kembalikan { blob, headers } hasilnya
 export async function callApi(path, form, signal) {
   const res = await fetch(`${API}/api/v1/images/${path}`, { method: 'POST', body: form, signal })
   if (!res.ok) {
@@ -11,5 +11,5 @@ export async function callApi(path, form, signal) {
     } catch { /* abaikan */ }
     throw new Error(msg)
   }
-  return res.blob()
+  return { blob: await res.blob(), headers: res.headers }
 }

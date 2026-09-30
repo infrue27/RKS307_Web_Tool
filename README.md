@@ -1,6 +1,6 @@
 # 🍒 Petit Pix
 
-Web tool untuk **mengubah ukuran**, **mengonversi format**, dan **mengompres** foto. Ubah ukuran mendukung pasfoto 2×3, 3×4, 4×6, dan ukuran kustom dengan resolusi 300 dpi. Foto diproses oleh REST API, dan halaman webnya nyaman dipakai di HP.
+Web tool untuk **menyusun lembar cetak**, **menambah watermark**, dan **mengompres** foto. Susun lembar menata banyak pasfoto (2×3, 3×4, 4×6, atau ukuran kustom) di kertas 4R atau A4 dengan resolusi 300 dpi. Foto diproses oleh REST API, dan halaman webnya nyaman dipakai di HP.
 
 > Tugas PBL#2 · Mata Kuliah **RKS307** · Tema: *Document & Media Transformation Service*
 
@@ -45,12 +45,14 @@ Web tool untuk **mengubah ukuran**, **mengonversi format**, dan **mengompres** f
 
 ## Fitur
 
-- **Ubah ukuran** ke ukuran cetak (cm) dengan resolusi 300 dpi
-  - Mode *potong tepi* (foto memenuhi bingkai) atau *muat semua* (ditambah latar putih)
-  - Foto bisa digeser dengan jari atau mouse untuk mengatur bagian yang dipotong
-- **Konversi format** antara JPG, PNG, dan WebP
+- **Susun lembar** banyak foto di satu kertas 4R atau A4 (300 dpi)
+  - Ukuran foto 2×3, 3×4, 4×6, atau kustom, dengan mode *potong tepi* atau *muat semua* (ditambah latar putih)
+  - Kertas tegak atau mendatar dipilih otomatis yang paling banyak muat, lengkap dengan garis tipis panduan potong
+- **Watermark** teks atau gambar/logo
+  - Satu saja (kanan bawah, kiri bawah, kanan atas, kiri atas, tengah) atau memenuhi foto (susunan miring atau lurus)
+  - Ukuran dan kepekatan bisa diatur, format hasil sama dengan foto asli
 - **Kompres** ukuran file dengan pengaturan kualitas 10 sampai 95%
-- Pratinjau hasil, ukuran piksel, ukuran file, dan selisih dari file asli
+- Pratinjau hasil, ukuran piksel, ukuran file, dan selisih dari file asli (atau jumlah foto per lembar)
 - Validasi file berdasarkan isi (bukan ekstensi), sehingga file palsu ditolak
 - Tampilan responsif untuk HP
 
@@ -90,8 +92,8 @@ Dokumentasi interaktif tersedia di Swagger: `http://localhost:8000/docs`
 
 | Method | Path | Fungsi |
 |---|---|---|
-| POST | `/api/v1/images/resize` | Ubah ukuran foto ke cm (300 dpi) |
-| POST | `/api/v1/images/convert` | Konversi ke `jpeg`, `png`, atau `webp` |
+| POST | `/api/v1/images/sheet` | Susun banyak foto di satu lembar 4R atau A4 (300 dpi) |
+| POST | `/api/v1/images/watermark` | Tambah watermark teks atau gambar |
 | POST | `/api/v1/images/compress` | Kompres dengan `quality` 10 sampai 95 |
 | GET | `/health` | Cek status server |
 
@@ -100,21 +102,28 @@ Semua endpoint gambar menerima `multipart/form-data` dan mengembalikan file gamb
 **Contoh penggunaan** (`curl`):
 
 ```bash
-# Ubah ukuran jadi 3 x 4 cm
-curl -X POST http://localhost:8000/api/v1/images/resize \
-  -F "file=@foto.jpg" -F "width_cm=3" -F "height_cm=4" -F "fit=cover" \
+# Lembar cetak: foto 3 x 4 cm di kertas 4R
+curl -X POST http://localhost:8000/api/v1/images/sheet \
+  -F "file=@foto.jpg" -F "width_cm=3" -F "height_cm=4" -F "paper=4r" \
+  -o lembar.jpg -D -
+
+# Watermark teks, diulang miring di seluruh foto
+curl -X POST http://localhost:8000/api/v1/images/watermark \
+  -F "file=@foto.jpg" -F "kind=text" -F "text=Contoh" -F "count=full" -F "angle=diag" \
   -o hasil.jpg
 
-# Konversi ke WebP
-curl -X POST http://localhost:8000/api/v1/images/convert \
-  -F "file=@foto.png" -F "format=webp" -o hasil.webp
+# Watermark gambar di kanan bawah
+curl -X POST http://localhost:8000/api/v1/images/watermark \
+  -F "file=@foto.jpg" -F "kind=image" -F "logo=@logo.png" -F "position=br" -o hasil.jpg
 
 # Kompres dengan kualitas 60
 curl -X POST http://localhost:8000/api/v1/images/compress \
   -F "file=@foto.jpg" -F "quality=60" -o kecil.jpg
 ```
 
-**Parameter `resize`:** `width_cm` dan `height_cm` (lebih dari 0 sampai 50), `fit` (`cover` atau `contain`), `fx` dan `fy` (posisi potong 0 sampai 1, bawaan 0.5).
+**Parameter `sheet`:** `width_cm` dan `height_cm` (lebih dari 0 sampai 50), `paper` (`4r` atau `a4`), `fit` (`cover` atau `contain`). Jumlah foto per lembar dikirim di header respons `X-Photo-Count`.
+
+**Parameter `watermark`:** `kind` (`text` atau `image`), `text` (maks 60 karakter), `logo` (file gambar, untuk `kind=image`), `count` (`one` atau `full`), `position` (`br`, `bl`, `tr`, `tl`, `c`), `angle` (`diag` atau `flat`), `size` (5 sampai 80, persen dari lebar foto), `opacity` (10 sampai 100).
 
 **Batasan:** format JPG, JPEG, PNG, dan WebP; ukuran file maksimal 10 MB.
 
@@ -160,7 +169,7 @@ RKS307_Web_Tool/
 │       ├── App.jsx
 │       ├── api.js          pemanggil REST API
 │       ├── styles.css
-│       └── components/     ResizePanel, ConvertPanel, CompressPanel, Preview
+│       └── components/     SheetPanel, WatermarkPanel, CompressPanel, Preview
 ├── docs/                   screenshot untuk README
 └── README.md
 ```
