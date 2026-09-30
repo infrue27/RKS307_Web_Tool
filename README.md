@@ -8,10 +8,10 @@ Web tool untuk **menyusun lembar cetak**, **menambah watermark**, dan **mengompr
 
 | Nama | NIM | Peran |
 |---|---|---|
-| Muhamad Faris Kurniawan | 4332501004 | Repository + backend: kerangka FastAPI, CORS, endpoint resize |
-| Hana Rafifa Helmi | 4333501016 | 	Frontend logika: App.jsx, koneksi API, panel ubah ukuran, pratinjau, geser foto |
-| Destin Olivia Rengganis | 4332501032 | Frontend UI/UX: styles.css, tampilan HP, panel konversi dan kompres |
-| Alicia Agatha Nathaniela Telaumbanua | 4332501029 | Backend: endpoint convert dan compress, validasi file |
+| Muhamad Faris Kurniawan | 4332501004 | Repository + backend: kerangka FastAPI, CORS, endpoint susun lembar |
+| Hana Rafifa Helmi | 4333501016 | Frontend logika: App.jsx, koneksi API, panel susun lembar, pratinjau |
+| Destin Olivia Rengganis | 4332501032 | Frontend UI/UX: styles.css, tampilan HP, panel watermark dan kompres |
+| Alicia Agatha Nathaniela Telaumbanua | 4332501029 | Backend: endpoint watermark dan compress, validasi file |
 | Najib Muhammad Ikvan | 4332501019 | Dokumentasi: Swagger, README, screenshot |
 
 ### Pembagian tugas
@@ -19,21 +19,22 @@ Web tool untuk **menyusun lembar cetak**, **menambah watermark**, dan **mengompr
 **Muhamad Faris Kurniawan · Repository & Backend** (`backend/main.py`, repo GitHub)
 - Mengelola repositori GitHub: struktur folder `backend/` dan `frontend/`, `.gitignore`, dan menggabungkan kontribusi anggota tim
 - Menyiapkan kerangka FastAPI: aplikasi, konfigurasi CORS, dan endpoint `health`
-- Membuat endpoint `POST /api/v1/images/resize`: ubah ukuran 300 dpi dengan mode potong dan muat semua, serta posisi potong (`fx`, `fy`)
+- Membuat endpoint `POST /api/v1/images/sheet`: menyusun banyak foto di kertas 4R atau A4 (300 dpi), memilih kertas tegak atau mendatar yang paling banyak muat, dan menambah garis panduan potong
 
-**Hana Rafifa Helmi · Frontend (logika)** (`frontend/src/App.jsx`, `api.js`, `components/ResizePanel.jsx`, `components/Preview.jsx`)
+**Hana Rafifa Helmi · Frontend (logika)** (`frontend/src/App.jsx`, `api.js`, `components/SheetPanel.jsx`, `components/Preview.jsx`)
 - Membangun struktur aplikasi React dan pengelolaan state di `App.jsx`
 - Menghubungkan frontend ke REST API (`fetch`, `FormData`, penanganan error dan status loading)
-- Membuat panel ubah ukuran dan area pratinjau, termasuk fitur geser foto untuk mengatur bagian yang dipotong
-- Menampilkan ukuran piksel, ukuran file, dan selisih dari file asli
+- Membuat panel susun lembar (pilihan kertas, ukuran foto, dan mode potong) dan area pratinjau
+- Menampilkan ukuran piksel, ukuran file, jumlah foto per lembar, dan selisih dari file asli
 
-**Destin Olivia Rengganis · Frontend (UI/UX)** (`frontend/src/styles.css`, `components/ConvertPanel.jsx`, `components/CompressPanel.jsx`)
+**Destin Olivia Rengganis · Frontend (UI/UX)** (`frontend/src/styles.css`, `components/WatermarkPanel.jsx`, `components/CompressPanel.jsx`)
 - Merancang tampilan: palet warna ceri (maroon, butter yellow, biru cornflower), tipografi, dan nama "Petit Pix"
 - Membuat tampilan yang responsif dan nyaman di HP (tombol unduh menempel di bawah, area sentuh besar)
-- Membuat panel konversi format dan panel kompres, termasuk pilihan format dan slider kualitas
+- Membuat panel watermark (jenis, posisi, susunan, ukuran, dan kepekatan) dan panel kompres dengan slider kualitas
 
 **Alicia Agatha Nathaniela Telaumbanua · Backend** (`backend/main.py`)
-- Membuat endpoint `POST /api/v1/images/convert` (JPG, PNG, WebP) dan `POST /api/v1/images/compress` (kualitas 10 sampai 95)
+- Membuat endpoint `POST /api/v1/images/watermark`: watermark teks atau gambar, satu posisi atau memenuhi foto
+- Membuat endpoint `POST /api/v1/images/compress` (kualitas 10 sampai 95)
 - Membuat validasi file: format dicek dari isi file, batas ukuran 10 MB, penanganan foto iPhone (MPO), dan pesan error yang jelas
 
 **Najib Muhammad Ikvan · Dokumentasi**
@@ -67,14 +68,16 @@ Web tool untuk **menyusun lembar cetak**, **menambah watermark**, dan **mengompr
 
 ## Tampilan
 
-| Web | Swagger |
-|---|---|
-| <img width="957" height="534" alt="image" src="https://github.com/user-attachments/assets/2c2e5c12-85e6-4015-8f04-fcb8ffd06eca" />
+| Web |
+|---|
+| <img width="944" height="500" alt="image" src="https://github.com/user-attachments/assets/87489043-2fc2-4c99-ab4a-471c467182c1" />
+
  | ![Swagger](docs/swagger.png) |
 
 | Tampilan HP |
 |---|
-|<img width="739" height="1600" alt="image" src="https://github.com/user-attachments/assets/c996c3a3-4c13-4c64-8196-1162100bfb06" />
+|<img width="739" height="1600" alt="image" src="https://github.com/user-attachments/assets/f83ab113-ec36-4344-a743-f5ecb78f60d9" />
+<img width="739" height="1600" alt="image" src="https://github.com/user-attachments/assets/d7266ae0-d97e-4d5c-a13f-63852f715dca" />
  |
 
 ## Arsitektur
