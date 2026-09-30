@@ -67,7 +67,7 @@ export default function App() {
 
   const load = f => {
     if (!f) return
-    if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { setErr('Format belum didukung. Gunakan JPG, PNG, atau WebP.'); return }
+    if (!/\.(jpe?g|png|webp)$/i.test(f.name) && !/^image\/(png|jpe?g|webp)$/.test(f.type)) { setErr('Format belum didukung. Gunakan JPG, PNG, atau WebP.'); return }
     setErr(''); setFile(f); set({ fx: 0.5, fy: 0.5 })
     createImageBitmap(f).then(b => setDims({ w: b.width, h: b.height }))
   }
@@ -115,7 +115,7 @@ export default function App() {
             onDrop={e => { e.preventDefault(); setOver(false); load(e.dataTransfer.files[0]) }}>
             <strong>{file ? file.name : 'Tarik foto ke sini atau klik untuk memilih'}</strong>
             <span className="hint" style={{ margin: 0 }}>{file ? 'Klik untuk ganti foto' : 'JPG, PNG, atau WebP'}</span>
-            <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" hidden
+            <input ref={input} type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" hidden
               onChange={e => { load(e.target.files[0]); e.target.value = '' }} />
           </div>
 
