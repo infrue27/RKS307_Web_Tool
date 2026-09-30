@@ -40,6 +40,8 @@ async def read_image(file: UploadFile):
         img.load()
     except (UnidentifiedImageError, OSError):
         raise HTTPException(415, "Format belum didukung. Gunakan JPG, JPEG, PNG, atau WebP.")
+    if fmt == "MPO":
+        fmt = "JPEG"
     if fmt not in MIME:
         raise HTTPException(415, "Isi file tidak sesuai format JPG, PNG, atau WebP.")
     img = ImageOps.exif_transpose(img)
